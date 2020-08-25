@@ -390,8 +390,17 @@ char32_t Replxx::ReplxxImpl::read_char( HINT_ACTION hintAction_ ) {
 		if ( eventType == Terminal::EVENT_TYPE::KEY_PRESS ) {
 			break;
 		}
+
 		std::lock_guard<std::mutex> l( _mutex );
 		clear_self_to_end_of_screen();
+
+		if (eventType == Terminal::EVENT_TYPE::UPDATE_PROMPT) {
+			// Update the prompt after the screen has been cleared and before it is redrawn
+			_prompt.update_text( UnicodeString(_updated_prompt) );
+			repaint();
+			continue;
+		}
+
 		while ( ! _messages.empty() ) {
 			string const& message( _messages.front() );
 			_terminal.write8( message.data(), message.length() );
@@ -558,6 +567,7 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 		if (_terminal.enable_raw_mode() == -1) {
 			return nullptr;
 		}
+		_updated_prompt.clear();
 		_prompt.set_text( UnicodeString( prompt ) );
 		_currentThread = std::this_thread::get_id();
 		clear();
@@ -621,6 +631,18 @@ void Replxx::ReplxxImpl::print( char const* str_, int size_ ) {
 		_terminal.notify_event( Terminal::EVENT_TYPE::MESSAGE );
 	}
 	return;
+}
+
+void Replxx::ReplxxImpl::set_prompt( std::string prompt ) {
+	if ( ( _currentThread == std::thread::id() ) || ( _currentThread == std::this_thread::get_id() ) ) {
+		clear_self_to_end_of_screen();
+		_prompt.update_text(UnicodeString( prompt ));
+		repaint();
+	} else {
+		std::lock_guard<std::mutex> l( _mutex );
+		_updated_prompt = std::move(prompt);
+		_terminal.notify_event( Terminal::EVENT_TYPE::UPDATE_PROMPT );
+	}
 }
 
 void Replxx::ReplxxImpl::preload_puffer(const char* preloadText) {

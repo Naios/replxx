@@ -275,11 +275,13 @@ void Replxx::print( char const* format_, ... ) {
 	return ( _impl->print( buf.get(), size ) );
 }
 
-void Replxx::write( char const* str, std::size_t length )
-{
+void Replxx::write( char const* str, std::size_t length ) {
 	return ( _impl->print( str, length ) );
 }
 
+void Replxx::set_prompt( std::string prompt ) {
+	return ( _impl->set_prompt( std::move(prompt) ) );
+}
 }
 
 ::Replxx* replxx_init() {
@@ -391,6 +393,11 @@ int replxx_write( ::Replxx* replxx_, char const* str, std::size_t length ) {
 		return ( -1 );
 	}
 	return static_cast<int>( length );
+}
+
+void replxx_set_prompt( ::Replxx* replxx_, const char* prompt ) {
+	replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
+	replxx->set_prompt(prompt);
 }
 
 struct replxx_completions {

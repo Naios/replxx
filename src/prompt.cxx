@@ -40,12 +40,20 @@ void Prompt::update_screen_columns( void ) {
 }
 
 void Prompt::set_text( UnicodeString const& text_ ) {
-	_extraLines = 0;
-	_lastLinePosition = 0;
 	_previousInputLen = 0;
 	_previousLen = 0;
+
 	_screenColumns = 0;
 	update_screen_columns();
+
+	update_text(text_);
+}
+
+
+void Prompt::update_text( UnicodeString const& text_ ) {
+	_lastLinePosition = 0;
+	_extraLines = 0;
+
 	// strip control characters from the prompt -- we do allow newline
 	_text = text_;
 	UnicodeString::const_iterator in( text_.begin() );
@@ -106,6 +114,7 @@ void Prompt::set_text( UnicodeString const& text_ ) {
 			++in;
 		}
 	}
+
 	_characterCount = len;
 	_byteCount = static_cast<int>(out - _text.begin());
 

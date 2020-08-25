@@ -19,6 +19,7 @@ public:
 	enum class EVENT_TYPE {
 		KEY_PRESS,
 		MESSAGE,
+		UPDATE_PROMPT,
 		TIMEOUT
 	};
 private:

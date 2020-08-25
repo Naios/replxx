@@ -444,6 +444,12 @@ public:
 	 */
 	void write( char const* str, std::size_t length );
 
+	/*! \brief Changes the prompt when input is being requested
+	 *
+	 * \param prompt - The prompt string to change to.
+	 */
+	void set_prompt( std::string prompt );
+
 	/*! \brief Schedule an emulated key press event.
 	 *
 	 * \param code - key press code to be emulated.
