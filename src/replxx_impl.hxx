@@ -139,6 +139,7 @@ private:
 	key_presses_t _keyPresses;
 	messages_t _messages;
 	std::string _updated_prompt;
+	bool _is_prompt_updated;
 	completions_t _completions;
 	int _completionContextLength;
 	int _completionSelection;
